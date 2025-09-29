@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import Header from "./components/Header";
-import BackgroundContainer from "./components/BackgroundContainer";
-import Card from "./components/Card";
-import SectionHeader from "./components/SectionHeader";
-import DisplayCard from "./components/DisplayCard";
-import ActionButton from "./components/ActionButton";
-import Footer from "./components/Footer";
+import Header from "./components/clientSide/Header";
+import BackgroundContainer from "./components/serverSide/BackgroundContainer";
+import Card from "./components/serverSide/Card";
+import SectionHeader from "./components/clientSide/SectionHeader";
+import DisplayCard from "./components/serverSide/DisplayCard";
+import ActionButton from "./components/clientSide/ActionButton";
+import Footer from "./components/clientSide/Footer";
 import {
   featuresCards,
   exploreOurContentCards,
