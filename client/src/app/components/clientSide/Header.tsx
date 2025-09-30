@@ -1,14 +1,13 @@
 import Link from "next/link";
-import GlowButton from "../clientSide/GlowButton";
+import GlowButton from "./GlowButton";
 
 export default function Header() {
   return (
     <header className="flex items-center justify-around py-3  text-white">
       <div className="flex items-center gap-8">
-        <GlowButton text="Action+" />
+        <GlowButton path="/" text="Action+" />
         <nav className="flex gap-4">
-          {/* Page is prefetched when the link is hovered or enters the viewport */}
-          <Link href="/" className="hover:text-blue-600 flex">
+          <Link className="hover:text-blue-600 flex" href="/movies">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -19,14 +18,20 @@ export default function Header() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-house mr-2 group-hover:scale-110 transition-transform"
+              className="lucide lucide-film mr-2 group-hover:scale-110 transition-transform"
             >
-              <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
-              <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+              <path d="M7 3v18"></path>
+              <path d="M3 7.5h4"></path>
+              <path d="M3 12h18"></path>
+              <path d="M3 16.5h4"></path>
+              <path d="M17 3v18"></path>
+              <path d="M17 7.5h4"></path>
+              <path d="M17 16.5h4"></path>
             </svg>
-            Home
+            Movies
           </Link>
-          <Link href="/about" className="hover:text-blue-600 flex">
+          <Link className="hover:text-blue-600 flex" href="tv-shows">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -37,16 +42,15 @@ export default function Header() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-layout-grid mr-2 group-hover:scale-110 transition-transform"
+              className="lucide lucide-tv mr-2 group-hover:scale-110 transition-transform"
             >
-              <rect width="7" height="7" x="3" y="3" rx="1"></rect>
-              <rect width="7" height="7" x="14" y="3" rx="1"></rect>
-              <rect width="7" height="7" x="14" y="14" rx="1"></rect>
-              <rect width="7" height="7" x="3" y="14" rx="1"></rect>
+              <rect width="20" height="15" x="2" y="3" rx="2" ry="2"></rect>
+              <polyline points="8,21 16,21"></polyline>
+              <polyline points="12,17 12,21"></polyline>
             </svg>
-            About
+            TV-Shows
           </Link>
-          <Link href="/contact" className="hover:text-blue-600 flex">
+          <Link className="hover:text-blue-600 flex" href="contact-us">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"

@@ -18,11 +18,11 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#0a0a0a] text-white py-12 mt-20">
+    <footer className="bg-[#0a0a0a] text-white py-12 mt-20 ">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-3 gap-8">
           <div>
-            <GlowButton text="Action+" />
+            <GlowButton text="Action+" path={"/"} />
             <p className="text-gray-400 mt-4">
               Your Ultimate Streaming Experience
             </p>

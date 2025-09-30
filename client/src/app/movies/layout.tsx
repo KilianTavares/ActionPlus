@@ -9,7 +9,7 @@ export default function MoviesLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main className="bg-[#121317]">{children}</main>
       <Footer />
     </>
   );
