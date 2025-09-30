@@ -111,7 +111,7 @@ export default function Home() {
             ))}
           </div>
         </BackgroundContainer>
-        <section className="">
+        <section className="pt-10">
           <div>
             <SectionHeader
               title="Explore our content"
