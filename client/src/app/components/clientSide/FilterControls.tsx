@@ -20,10 +20,15 @@ interface FilterValues {
   rating?: number;
 }
 
+type OnFilterChange = <K extends keyof FilterValues>(
+  key: K,
+  value: FilterValues[K]
+) => void;
+
 interface FilterControlsProps {
   filters: FilterConfig;
   values: FilterValues;
-  onFilterChange: (key: string, value: any) => void;
+  onFilterChange: OnFilterChange;
   onClearFilters: () => void;
 }
 
@@ -35,9 +40,9 @@ export default function FilterControls({
 }: FilterControlsProps) {
   return (
     <div className="bg-gray-900/50 rounded-lg p-6 mb-8">
-      <div className="flex flex-wrap gap-4 items-end">
+      <div className="flex flex-wrap gap-4 items-end  ">
         {filters.genres && (
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-grow">
             <label className="text-white text-sm mb-2">Genre</label>
             <select
               value={values.genre || ""}
@@ -55,7 +60,7 @@ export default function FilterControls({
         )}
 
         {filters.sortOptions && (
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-grow">
             <label className="text-white text-sm mb-2">Sort By</label>
             <select
               value={values.sortBy || ""}
@@ -73,7 +78,7 @@ export default function FilterControls({
 
         {filters.yearRange && (
           <>
-            <div className="flex flex-col">
+            <div className="flex flex-col ">
               <label className="text-white text-sm mb-2">Year From</label>
               <input
                 type="number"
@@ -89,7 +94,7 @@ export default function FilterControls({
                 className="px-3 py-2 bg-gray-800 text-white rounded w-24"
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col ">
               <label className="text-white text-sm mb-2">Year To</label>
               <input
                 type="number"
@@ -109,7 +114,7 @@ export default function FilterControls({
         )}
 
         {filters.ratingRange && (
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-grow">
             <label className="text-white text-sm mb-2">Min Rating</label>
             <select
               value={values.rating || ""}

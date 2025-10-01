@@ -10,7 +10,6 @@ import FilterControls from "../components/clientSide/FilterControls";
 export default function Movies() {
   const [movies, setMovies] = useState<any[]>([]);
   const [error, setError] = useState<Error | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
@@ -26,8 +25,10 @@ export default function Movies() {
   const buildFilteredURL = () => {
     let url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${currentPage}&sort_by=${filters.sortBy}`;
     if (filters.genre) url += `&with_genres=${filters.genre}`;
-    if (filters.yearFrom) url += `&primary_release_date.gte=${filters.yearFrom}-01-01`;
-    if (filters.yearTo) url += `&primary_release_date.lte=${filters.yearTo}-12-31`;
+    if (filters.yearFrom)
+      url += `&primary_release_date.gte=${filters.yearFrom}-01-01`;
+    if (filters.yearTo)
+      url += `&primary_release_date.lte=${filters.yearTo}-12-31`;
     if (filters.rating) url += `&vote_average.gte=${filters.rating}`;
     return url;
   };
@@ -105,7 +106,7 @@ export default function Movies() {
   };
 
   const handleFilterChange = (key: string, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1);
   };
 
@@ -131,6 +132,7 @@ export default function Movies() {
     yearRange: { min: 1900, max: new Date().getFullYear() },
     ratingRange: { min: 0, max: 10 },
   };
+  console.log(movies);
 
   if (loading)
     return (
@@ -188,7 +190,6 @@ export default function Movies() {
         </section>
       </>
     );
-  console.log(totalPages);
   return (
     <>
       <BackgroundContainer backgroundImage="https://image.tmdb.org/t/p/original/wJ20rOZ1VgkCqv1jeOQB2Brny9k.jpg?w=1920&h=1080">
