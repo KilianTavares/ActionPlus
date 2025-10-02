@@ -1,22 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    enquiryType: 'general',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    enquiryType: "general",
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
+    null
+  );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -26,18 +32,24 @@ export default function ContactForm() {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error('Failed to submit');
-      
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', phone: '', enquiryType: 'general', message: '' });
+      if (!response.ok) throw new Error("Failed to submit");
+
+      setSubmitStatus("success");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        enquiryType: "general",
+        message: "",
+      });
     } catch (error) {
-      setSubmitStatus('error');
+      setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
     }
@@ -73,7 +85,9 @@ export default function ContactForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-white font-medium mb-2">Phone Number</label>
+            <label className="block text-white font-medium mb-2">
+              Phone Number
+            </label>
             <input
               type="tel"
               name="phone"
@@ -83,7 +97,9 @@ export default function ContactForm() {
             />
           </div>
           <div>
-            <label className="block text-white font-medium mb-2">Enquiry Type *</label>
+            <label className="block text-white font-medium mb-2">
+              Enquiry Type *
+            </label>
             <select
               name="enquiryType"
               value={formData.enquiryType}
@@ -116,16 +132,16 @@ export default function ContactForm() {
           disabled={isSubmitting}
           className="w-full bg-[#0DCAF0] text-black py-3 px-6 rounded font-bold hover:bg-[#0DCAF0]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isSubmitting ? 'Sending...' : 'Send Message'}
+          {isSubmitting ? "Sending..." : "Send Message"}
         </button>
 
-        {submitStatus === 'success' && (
+        {submitStatus === "success" && (
           <div className="bg-green-900/20 border border-green-500 rounded p-4 text-green-300">
             Message sent successfully! We'll get back to you soon.
           </div>
         )}
 
-        {submitStatus === 'error' && (
+        {submitStatus === "error" && (
           <div className="bg-red-900/20 border border-red-500 rounded p-4 text-red-300">
             Failed to send message. Please try again.
           </div>

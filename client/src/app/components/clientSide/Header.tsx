@@ -31,7 +31,7 @@ export default function Header() {
             </svg>
             Movies
           </Link>
-          <Link className="hover:text-blue-600 flex" href="tv-shows">
+          <Link className="hover:text-blue-600 flex" href="/tv-shows">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -50,7 +50,7 @@ export default function Header() {
             </svg>
             TV-Shows
           </Link>
-          <Link className="hover:text-blue-600 flex" href="contact-us">
+          <Link className="hover:text-blue-600 flex" href="/contact-us">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"

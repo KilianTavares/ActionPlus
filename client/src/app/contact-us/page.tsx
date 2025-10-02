@@ -14,7 +14,7 @@ export default function ContactUs() {
           </div>
         </section>
       </BackgroundContainer>
-      
+
       <section className="max-w-6xl mx-auto px-6 py-12">
         <ContactForm />
       </section>
