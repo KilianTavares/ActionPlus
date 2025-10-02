@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="bg-[#121317]">
+      <main className="bg-[#121317] ">
         <BackgroundContainer backgroundImage="https://image.tmdb.org/t/p/original/wJ20rOZ1VgkCqv1jeOQB2Brny9k.jpg?w=1920&h=1080">
           <section
             id="Hero"

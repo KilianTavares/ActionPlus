@@ -1,6 +1,7 @@
 "use client";
 import { useParams, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import CommentSection from "../../components/clientSide/CommentSection";
 
 interface SelectedMovieProps {
   id: number;
@@ -94,17 +95,17 @@ export default function Page() {
       </>
     );
   return (
-    <div className="min-h-screen bg-black">
+    <div className=" ">
       {selectedMovie && (
         <>
           <div
-            className="relative h-96 bg-cover bg-center"
+            className="relative h-screen bg-cover bg-center"
             style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url(https://image.tmdb.org/t/p/original${selectedMovie.backdrop_path})`,
+              backgroundImage: `linear-gradient(transparent, #121317), url(https://image.tmdb.org/t/p/original${selectedMovie.backdrop_path})`,
             }}
           >
-            <div className="absolute inset-0 flex items-end">
-              <div className="max-w-6xl mx-auto px-6 py-12 flex gap-8">
+            <div className="absolute inset-0 flex items-end pb-5">
+              <div className="max-w-6xl mx-auto px-6 flex gap-8 ">
                 <img
                   src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
                   alt={selectedMovie.title}
@@ -138,6 +139,7 @@ export default function Page() {
               </div>
             </div>
           </div>
+          <CommentSection movieId={selectedMovie.id} />
         </>
       )}
     </div>

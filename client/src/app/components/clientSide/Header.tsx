@@ -75,7 +75,7 @@ export default function Header() {
       <div className="flex items-center gap-4">
         <input
           type="text"
-          className="border border-[#0DCAF0] rounded-full py-2 px-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0DCAF0] focus:border-transparent w-64 transition-all duration-200"
+          className="border border-[#0DCAF0] rounded-full text-black py-2 px-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0DCAF0] focus:border-transparent w-64 transition-all duration-200"
           placeholder="Search movies, TV shows..."
           defaultValue=""
         />
