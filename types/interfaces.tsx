@@ -11,6 +11,14 @@ export interface DynamicFormProps {
   subheading: string;
   inputs: FormInput[];
   endpoint: string;
+  switchTo?: boolean;
+  altForm?:
   onSuccess?: () => void;
   onError?: (error: string) => void;
+}
+
+export interface signUpProps {
+  name: string;
+  email: string;
+  password: string;
 }
