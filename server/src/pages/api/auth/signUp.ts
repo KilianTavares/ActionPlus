@@ -21,7 +21,7 @@ export default async function handler(
     if (!email || !name || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email, name, and password are required"
+        message: "Email, name, and password are required",
       });
     }
 

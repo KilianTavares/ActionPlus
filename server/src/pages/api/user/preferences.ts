@@ -7,13 +7,7 @@ import {
 import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
-  if (req.method === "GET") {
-    // req.user is available because of middleware
-    res.status(200).json({
-      success: true,
-      user: req.user,
-    });
-  } else if (req.method === "PUT") {
+  if (req.method === "PUT") {
     const { name, preferences, settings } = req.body;
 
     try {
@@ -79,10 +73,5 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         .status(500)
         .json({ success: false, message: "Failed to update profile" });
     }
-  } else {
-    res.setHeader("Allow", ["GET", "PUT"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
-
-export default authenticateToken(handler);
