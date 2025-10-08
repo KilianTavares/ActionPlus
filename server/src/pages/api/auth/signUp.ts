@@ -3,6 +3,7 @@ import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import bcrypt from "bcrypt";
 import { generateToken } from "../../../lib/jwt";
 import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
+import { DEFAULT_USER_DATA } from "../../../lib/defaults";
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,14 +33,16 @@ export default async function handler(
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // DynamoDB item structure
+    // DynamoDB item structure with defaults
     const dynamoItem = {
       userID: userId,
       timestamp: timestamp,
       email,
       name,
       password: hashedPassword,
-      preferences,
+      preferences: { ...DEFAULT_USER_DATA.preferences, ...preferences },
+      settings: DEFAULT_USER_DATA.settings,
+      privacy: DEFAULT_USER_DATA.privacy,
       createdAt: timestamp,
     };
 

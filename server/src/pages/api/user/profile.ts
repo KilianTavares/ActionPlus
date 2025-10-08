@@ -5,6 +5,7 @@ import {
   AuthenticatedRequest,
 } from "../../../lib/middleware";
 import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
+import { notifyUserUpdate } from "../../../lib/websocket";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method === "GET") {
@@ -61,16 +62,22 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
       const result = await docClient.send(new UpdateCommand(updateParams));
 
+      const updatedUser = {
+        userID: result.Attributes!.userID,
+        email: result.Attributes!.email,
+        name: result.Attributes!.name,
+        preferences: result.Attributes!.preferences,
+        settings: result.Attributes!.settings,
+        privacy: result.Attributes!.privacy,
+      };
+
+      // Notify user via WebSocket
+      notifyUserUpdate(req.user!.userID, updatedUser);
+
       res.status(200).json({
         success: true,
         message: "Profile updated successfully",
-        user: {
-          userID: result.Attributes!.userID,
-          email: result.Attributes!.email,
-          name: result.Attributes!.name,
-          preferences: result.Attributes!.preferences,
-          settings: result.Attributes!.settings,
-        },
+        user: updatedUser,
       });
     } catch (error) {
       console.error("Profile update error:", error);
