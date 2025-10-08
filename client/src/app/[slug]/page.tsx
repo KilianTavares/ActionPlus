@@ -6,6 +6,7 @@ import ProfileSidebar from "../components/clientSide/ProfileSidebar";
 import UserDetails from "../components/clientSide/UserDetails";
 import UserPreferences from "../components/clientSide/UserPreferences";
 import UserSettings from "../components/clientSide/UserSettings";
+import UserPrivacy from "../components/clientSide/UserPrivacy";
 
 export default function Page({
   params,
@@ -36,6 +37,8 @@ export default function Page({
         return <UserPreferences user={user} />;
       case "settings":
         return <UserSettings user={user} />;
+      case "privacy":
+        return <UserPrivacy user={user} />;
       default:
         return <UserDetails user={user} />;
     }

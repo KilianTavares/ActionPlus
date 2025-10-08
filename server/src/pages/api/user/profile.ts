@@ -14,7 +14,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       user: req.user,
     });
   } else if (req.method === "PUT") {
-    const { name, preferences, settings } = req.body;
+    const { privacy, preferences, settings } = req.body;
 
     try {
       // Get user's current data to find the timestamp (sort key)
@@ -46,11 +46,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       };
 
       // Add optional fields to update
-      if (name) {
-        updateParams.UpdateExpression += ", #name = :name";
-        updateParams.ExpressionAttributeNames = { "#name": "name" };
-        updateParams.ExpressionAttributeValues[":name"] = name;
-      }
       if (preferences) {
         updateParams.UpdateExpression += ", preferences = :preferences";
         updateParams.ExpressionAttributeValues[":preferences"] = preferences;
@@ -58,6 +53,10 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       if (settings) {
         updateParams.UpdateExpression += ", settings = :settings";
         updateParams.ExpressionAttributeValues[":settings"] = settings;
+      }
+      if (privacy) {
+        updateParams.UpdateExpression += ", privacy = :privacy";
+        updateParams.ExpressionAttributeValues[":privacy"] = privacy;
       }
 
       const result = await docClient.send(new UpdateCommand(updateParams));

@@ -5,11 +5,15 @@ interface ProfileSidebarProps {
   setActiveTab: (tab: string) => void;
 }
 
-export default function ProfileSidebar({ activeTab, setActiveTab }: ProfileSidebarProps) {
+export default function ProfileSidebar({
+  activeTab,
+  setActiveTab,
+}: ProfileSidebarProps) {
   const menuItems = [
     { id: "details", label: "User Details", icon: "👤" },
     { id: "preferences", label: "Preferences", icon: "⚙️" },
-    { id: "settings", label: "Settings", icon: "🔧" }
+    { id: "settings", label: "Settings", icon: "🔧" },
+    { id: "privacy", label: "Privacy", icon: "🔒" },
   ];
 
   return (

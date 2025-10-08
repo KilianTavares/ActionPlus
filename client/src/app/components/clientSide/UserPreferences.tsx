@@ -24,6 +24,11 @@ export default function UserPreferences({ user }: UserPreferencesProps) {
     setPreferences((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleSave = () => {
+    // Save preferences to the server or local storage
+    console.log("Preferences saved:", preferences);
+  };
+
   return (
     <div className="bg-gray-800 rounded-lg p-6">
       <h2 className="text-2xl font-bold mb-6">Preferences</h2>
