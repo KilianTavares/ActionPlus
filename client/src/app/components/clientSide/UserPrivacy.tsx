@@ -79,7 +79,7 @@ export default function UserPrivacy({ user }: UserPrivacyProps) {
           </button>
         </div>
 
-        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition-colors">
+        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition-colors" onClick={handleSave}>
           Save Privacy Settings
         </button>
       </div>

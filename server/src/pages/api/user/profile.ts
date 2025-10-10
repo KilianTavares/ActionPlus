@@ -5,7 +5,7 @@ import {
   AuthenticatedRequest,
 } from "../../../lib/middleware";
 import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
-import { notifyUserUpdate } from "../../../lib/websocket";
+
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method === "GET") {
@@ -71,16 +71,17 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         privacy: result.Attributes!.privacy,
       };
 
-      // Notify user via WebSocket
-      notifyUserUpdate(req.user!.userID, updatedUser);
 
+
+      console.log(`✅ User ${req.user!.userID} successfully updated profile`);
+      
       res.status(200).json({
         success: true,
         message: "Profile updated successfully",
         user: updatedUser,
       });
     } catch (error) {
-      console.error("Profile update error:", error);
+      console.error(`❌ Profile update failed for user ${req.user!.userID}:`, error);
       res
         .status(500)
         .json({ success: false, message: "Failed to update profile" });

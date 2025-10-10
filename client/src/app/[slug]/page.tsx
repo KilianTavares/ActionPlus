@@ -29,6 +29,8 @@ export default function Page({
     );
   }
 
+  const handleSave = () => {};
+
   const renderContent = () => {
     switch (activeTab) {
       case "details":

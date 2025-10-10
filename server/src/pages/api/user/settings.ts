@@ -5,7 +5,7 @@ import {
   AuthenticatedRequest,
 } from "../../../lib/middleware";
 import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
-import { notifyUserUpdate } from "../../../lib/websocket";
+
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method === "PUT") {
@@ -62,15 +62,17 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         privacy: result.Attributes!.privacy,
       };
 
-      notifyUserUpdate(req.user!.userID, updatedUser);
 
+
+      console.log(`✅ User ${req.user!.userID} successfully updated ${action}`);
+      
       res.status(200).json({
         success: true,
         message: `${action} updated successfully`,
         user: updatedUser,
       });
     } catch (error) {
-      console.error("Settings update error:", error);
+      console.error(`❌ Settings update failed for user ${req.user!.userID}:`, error);
       res.status(500).json({ success: false, message: "Failed to update settings" });
     }
   } else {
