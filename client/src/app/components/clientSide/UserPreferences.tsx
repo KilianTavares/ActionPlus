@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/hooks/useUserProfile";
 interface User {
   userID: string;
   email: string;
@@ -13,6 +14,8 @@ interface UserPreferencesProps {
 }
 
 export default function UserPreferences({ user }: UserPreferencesProps) {
+  const { token } = useAuth();
+  const { profile, loading } = useUserProfile();
   const [preferences, setPreferences] = useState({
     favoriteGenre: "action",
     notifications: true,
@@ -20,13 +23,46 @@ export default function UserPreferences({ user }: UserPreferencesProps) {
     language: "en",
   });
 
+  useEffect(() => {
+    if (profile?.preferences) {
+      setPreferences(profile.preferences);
+    }
+  }, [profile]);
+
   const handleChange = (key: string, value: any) => {
     setPreferences((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = () => {
-    // Save preferences to the server or local storage
-    console.log("Preferences saved:", preferences);
+  if (loading) {
+    return <div className="bg-gray-800 rounded-lg p-6">Loading...</div>;
+  }
+
+  const handleSave = async () => {
+    console.log('🔑 Token being used:', token);
+    try {
+      const response = await fetch("http://localhost:3001/api/user/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: "preferences",
+          data: preferences,
+        }),
+      });
+
+      const result = await response.json();
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response data:', result);
+      if (result.success) {
+        console.log("Preferences saved successfully");
+      } else {
+        console.error("Failed to save preferences:", result.message);
+      }
+    } catch (error) {
+      console.error("Error saving preferences:", error);
+    }
   };
 
   return (
@@ -82,7 +118,10 @@ export default function UserPreferences({ user }: UserPreferencesProps) {
           </button>
         </div>
 
-        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition-colors" onClick={handleSave}>
+        <button
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition-colors"
+          onClick={handleSave}
+        >
           Save Preferences
         </button>
       </div>

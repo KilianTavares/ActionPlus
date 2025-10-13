@@ -1,5 +1,5 @@
 import { NextApiResponse } from "next";
-import { UpdateCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { UpdateCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import {
   authenticateToken,
   AuthenticatedRequest,
@@ -7,29 +7,68 @@ import {
 import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+  // Handle CORS first
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Methods", "GET, PUT, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === "GET") {
-    // req.user is available because of middleware
-    res.status(200).json({
-      success: true,
-      user: req.user,
-    });
+    try {
+      const getUserResult = await docClient.send(
+        new QueryCommand({
+          TableName: TABLE_NAME,
+          KeyConditionExpression: "userID = :userID",
+          ExpressionAttributeValues: { ":userID": req.user!.userID },
+        })
+      );
+
+      if (!getUserResult.Items || getUserResult.Items.length === 0) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      const userItem = getUserResult.Items[0];
+      const userData = {
+        userID: userItem.userID,
+        email: userItem.email,
+        name: userItem.name,
+        preferences: userItem.preferences,
+        settings: userItem.settings,
+        privacy: userItem.privacy,
+      };
+
+      res.status(200).json({
+        success: true,
+        user: userData,
+      });
+    } catch (error) {
+      console.error(`❌ Profile fetch failed for user ${req.user!.userID}:`, error);
+      res.status(500).json({ success: false, message: "Failed to fetch profile" });
+    }
   } else if (req.method === "PUT") {
     const { action, data, name, privacy, preferences, settings } = req.body;
 
     try {
       // Get user's current data to find the timestamp (sort key)
       const getUserResult = await docClient.send(
-        new GetCommand({
+        new QueryCommand({
           TableName: TABLE_NAME,
-          Key: { userID: req.user!.userID },
+          KeyConditionExpression: "userID = :userID",
+          ExpressionAttributeValues: { ":userID": req.user!.userID },
         })
       );
 
-      if (!getUserResult.Item) {
+      if (!getUserResult.Items || getUserResult.Items.length === 0) {
         return res
           .status(404)
           .json({ success: false, message: "User not found" });
       }
+
+      const userItem = getUserResult.Items[0];
 
       let updateExpression = "SET lastUpdated = :lastUpdated";
       let expressionValues: any = { ":lastUpdated": new Date().toISOString() };
@@ -41,21 +80,21 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           case "preferences":
             updateExpression += ", preferences = :preferences";
             expressionValues[":preferences"] = {
-              ...getUserResult.Item.preferences,
+              ...userItem.preferences,
               ...data,
             };
             break;
           case "settings":
             updateExpression += ", settings = :settings";
             expressionValues[":settings"] = {
-              ...getUserResult.Item.settings,
+              ...userItem.settings,
               ...data,
             };
             break;
           case "privacy":
             updateExpression += ", privacy = :privacy";
             expressionValues[":privacy"] = {
-              ...getUserResult.Item.privacy,
+              ...userItem.privacy,
               ...data,
             };
             break;
@@ -89,7 +128,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         TableName: TABLE_NAME,
         Key: {
           userID: req.user!.userID,
-          timestamp: getUserResult.Item.timestamp,
+          timestamp: userItem.timestamp,
         },
         UpdateExpression: updateExpression,
         ExpressionAttributeValues: expressionValues,
@@ -128,9 +167,26 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         .json({ success: false, message: "Failed to update profile" });
     }
   } else {
-    res.setHeader("Allow", ["GET", "PUT"]);
+    res.setHeader("Allow", ["GET", "PUT", "OPTIONS"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
 
-export default authenticateToken(handler);
+// Handle CORS before authentication
+function corsHandler(req: any, res: NextApiResponse, next: () => void) {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Methods", "GET, PUT, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+  next();
+}
+
+export default function (req: any, res: NextApiResponse) {
+  corsHandler(req, res, () => {
+    authenticateToken(handler)(req, res);
+  });
+}
