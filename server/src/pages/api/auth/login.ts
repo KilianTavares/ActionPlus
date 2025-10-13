@@ -50,8 +50,8 @@ export default async function handler(
           .json({ success: false, message: "Invalid credentials" });
       }
 
-      // Generate JWT token
-      const token = generateToken({
+      // Generate JWT tokens
+      const tokens = generateToken({
         userID: user.userID,
         email: user.email,
         name: user.name,
@@ -59,7 +59,7 @@ export default async function handler(
 
       res.status(200).json({
         success: true,
-        token,
+        ...tokens,
         user: { userID: user.userID, email: user.email, name: user.name },
       });
     } catch (error) {

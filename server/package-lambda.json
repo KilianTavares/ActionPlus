@@ -1,0 +1,23 @@
+{
+  "name": "action-lambda-api",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "serverless deploy"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.0.0",
+    "serverless": "^3.0.0",
+    "serverless-plugin-typescript": "^2.1.0",
+    "typescript": "^5.0.0"
+  }
+}

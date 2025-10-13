@@ -4,7 +4,7 @@ import Link from "next/link";
 
 interface tvShow {
   id: number;
-  title: string;
+  name: string;
   vote_average: number;
   original_language: string;
   backdrop_path: string;
@@ -34,7 +34,7 @@ export default function TvShowListing({ tvShow }: tvShowProps) {
       >
         <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
           <h3 className="text-lg font-bold mb-2 group-hover:text-[#0DCAF0] transition-colors">
-            {tvShow.title}
+            {tvShow.name}
           </h3>
           <div className="flex justify-between items-center text-sm">
             <span className="bg-yellow-500 text-black px-2 py-1 rounded">
