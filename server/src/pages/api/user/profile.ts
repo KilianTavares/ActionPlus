@@ -6,7 +6,6 @@ import {
 } from "../../../lib/middleware";
 import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
 
-
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     // req.user is available because of middleware
@@ -15,7 +14,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       user: req.user,
     });
   } else if (req.method === "PUT") {
-    const { privacy, preferences, settings } = req.body;
+    const { action, data, name, privacy, preferences, settings } = req.body;
 
     try {
       // Get user's current data to find the timestamp (sort key)
@@ -32,32 +31,73 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           .json({ success: false, message: "User not found" });
       }
 
-      // Update user profile
+      let updateExpression = "SET lastUpdated = :lastUpdated";
+      let expressionValues: any = { ":lastUpdated": new Date().toISOString() };
+      let expressionNames: any = {};
+
+      // Action-based updates (granular)
+      if (action && data) {
+        switch (action) {
+          case "preferences":
+            updateExpression += ", preferences = :preferences";
+            expressionValues[":preferences"] = {
+              ...getUserResult.Item.preferences,
+              ...data,
+            };
+            break;
+          case "settings":
+            updateExpression += ", settings = :settings";
+            expressionValues[":settings"] = {
+              ...getUserResult.Item.settings,
+              ...data,
+            };
+            break;
+          case "privacy":
+            updateExpression += ", privacy = :privacy";
+            expressionValues[":privacy"] = {
+              ...getUserResult.Item.privacy,
+              ...data,
+            };
+            break;
+          default:
+            return res
+              .status(400)
+              .json({ success: false, message: "Invalid action" });
+        }
+      } else {
+        // Direct field updates (bulk)
+        if (name) {
+          updateExpression += ", #name = :name";
+          expressionNames["#name"] = "name";
+          expressionValues[":name"] = name;
+        }
+        if (preferences) {
+          updateExpression += ", preferences = :preferences";
+          expressionValues[":preferences"] = preferences;
+        }
+        if (settings) {
+          updateExpression += ", settings = :settings";
+          expressionValues[":settings"] = settings;
+        }
+        if (privacy) {
+          updateExpression += ", privacy = :privacy";
+          expressionValues[":privacy"] = privacy;
+        }
+      }
+
       const updateParams: any = {
         TableName: TABLE_NAME,
         Key: {
           userID: req.user!.userID,
           timestamp: getUserResult.Item.timestamp,
         },
-        UpdateExpression: "SET lastUpdated = :lastUpdated",
-        ExpressionAttributeValues: {
-          ":lastUpdated": new Date().toISOString(),
-        },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeValues: expressionValues,
         ReturnValues: "ALL_NEW",
       };
 
-      // Add optional fields to update
-      if (preferences) {
-        updateParams.UpdateExpression += ", preferences = :preferences";
-        updateParams.ExpressionAttributeValues[":preferences"] = preferences;
-      }
-      if (settings) {
-        updateParams.UpdateExpression += ", settings = :settings";
-        updateParams.ExpressionAttributeValues[":settings"] = settings;
-      }
-      if (privacy) {
-        updateParams.UpdateExpression += ", privacy = :privacy";
-        updateParams.ExpressionAttributeValues[":privacy"] = privacy;
+      if (Object.keys(expressionNames).length > 0) {
+        updateParams.ExpressionAttributeNames = expressionNames;
       }
 
       const result = await docClient.send(new UpdateCommand(updateParams));
@@ -71,17 +111,18 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         privacy: result.Attributes!.privacy,
       };
 
-
-
-      console.log(`✅ User ${req.user!.userID} successfully updated profile`);
-      
       res.status(200).json({
         success: true,
-        message: "Profile updated successfully",
+        message: action
+          ? `${action} updated successfully`
+          : "Profile updated successfully",
         user: updatedUser,
       });
     } catch (error) {
-      console.error(`❌ Profile update failed for user ${req.user!.userID}:`, error);
+      console.error(
+        `❌ Profile update failed for user ${req.user!.userID}:`,
+        error
+      );
       res
         .status(500)
         .json({ success: false, message: "Failed to update profile" });

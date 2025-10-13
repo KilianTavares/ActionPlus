@@ -78,8 +78,8 @@ export default function AuthForm() {
       if (!response.ok) throw new Error("Submission failed");
 
       const data = await response.json();
-      if (data.success && data.token) {
-        login(data.token, data.user);
+      if (data.success && data.accessToken) {
+        login(data.accessToken, data.user);
         router.push("/");
       }
       setFormData({});

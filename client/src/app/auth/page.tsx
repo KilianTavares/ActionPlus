@@ -1,5 +1,5 @@
 import BackgroundContainer from "../components/serverSide/BackgroundContainer";
-import AuthForm from "../components/clientSide/authForm";
+import AuthForm from "../components/clientSide/AuthForm";
 export default function ContactUs() {
   return (
     <>

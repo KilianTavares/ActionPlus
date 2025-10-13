@@ -72,8 +72,8 @@ export default async function handler(
         })
       );
 
-      // Generate JWT token
-      const token = generateToken({
+      // Generate JWT tokens
+      const tokens = generateToken({
         userID: userId,
         email,
         name,
@@ -81,7 +81,7 @@ export default async function handler(
 
       res.status(201).json({
         success: true,
-        token,
+        ...tokens,
         user: { userID: userId, email, name },
         message: "User created successfully",
       });

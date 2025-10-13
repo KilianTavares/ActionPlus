@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface User {
   userID: string;
@@ -26,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Load from localStorage on app start
     const savedToken = localStorage.getItem("authToken");
     const savedUser = localStorage.getItem("user");
-    
+
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
@@ -48,13 +54,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      token,
-      login,
-      logout,
-      isAuthenticated: !!token && !!user
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        login,
+        logout,
+        isAuthenticated: !!token && !!user,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
