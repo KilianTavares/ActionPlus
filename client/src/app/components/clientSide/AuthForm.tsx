@@ -54,8 +54,8 @@ export default function AuthForm() {
   const router = useRouter();
 
   const endpoint = signUp
-    ? "http://localhost:3001/api/auth/signUp"
-    : "http://localhost:3001/api/auth/login";
+    ? `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/user/create`
+    : `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/user/login`;
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));

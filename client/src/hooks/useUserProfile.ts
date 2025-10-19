@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UserProfile {
   userID: string;
@@ -17,20 +17,23 @@ export function useUserProfile() {
 
   const fetchProfile = async () => {
     if (!token) return;
-    
+
     try {
-      const response = await fetch('http://localhost:3001/api/user/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       const result = await response.json();
       if (result.success) {
         setProfile(result.user);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error("Error fetching profile:", error);
     } finally {
       setLoading(false);
     }
