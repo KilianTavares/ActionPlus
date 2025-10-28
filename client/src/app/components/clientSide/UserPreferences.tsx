@@ -38,23 +38,26 @@ export default function UserPreferences({ user }: UserPreferencesProps) {
   }
 
   const handleSave = async () => {
-    console.log('🔑 Token being used:', token);
+    console.log("🔑 Token being used:", token);
     try {
-      const response = await fetch("http://localhost:3001/api/user/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          action: "preferences",
-          data: preferences,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            action: "preferences",
+            data: preferences,
+          }),
+        }
+      );
 
       const result = await response.json();
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response data:', result);
+      console.log("📡 Response status:", response.status);
+      console.log("📡 Response data:", result);
       if (result.success) {
         console.log("Preferences saved successfully");
       } else {
