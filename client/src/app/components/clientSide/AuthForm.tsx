@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormInput, authFormProps } from "../../../../../types/interfaces";
 import { useAuth } from "../../../contexts/AuthContext";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const signUpInputs: FormInput[] = [
   {
@@ -53,9 +54,7 @@ export default function AuthForm() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const endpoint = signUp
-    ? `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/user/create`
-    : `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/user/login`;
+  const endpoint = signUp ? API_ENDPOINTS.signup : API_ENDPOINTS.login;
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -71,7 +70,9 @@ export default function AuthForm() {
     try {
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formData),
       });
 
