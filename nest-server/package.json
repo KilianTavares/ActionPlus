@@ -1,0 +1,14 @@
+{
+  "name": "nest-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"cd auth-service && npm run start\" \"cd client-app && npm run start\" \"cd profile-service && npm run start\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

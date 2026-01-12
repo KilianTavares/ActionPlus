@@ -41,3 +41,5 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+NESTJS_MIGRATION_ROADMAP.md
+docker-compose.yml
