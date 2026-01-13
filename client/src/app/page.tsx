@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import Header from "./components/clientSide/Header";
 import BackgroundContainer from "./components/serverSide/BackgroundContainer";
@@ -8,6 +7,7 @@ import SectionHeader from "./components/clientSide/SectionHeader";
 import DisplayCard from "./components/serverSide/DisplayCard";
 import ActionButton from "./components/clientSide/ActionButton";
 import Footer from "./components/clientSide/Footer";
+import { useSearch } from "./contexts/SearchContext";
 import {
   featuresCards,
   exploreOurContentCards,
@@ -16,6 +16,22 @@ import {
 } from "./constants/data";
 
 export default function Home() {
+  const {
+    searchQuery,
+    setSearchQuery,
+    results,
+    setResults,
+    loading,
+    setLoading,
+    history,
+    setHistory,
+  } = useSearch();
+  console.log({
+    onSubmitQ: searchQuery,
+    onSubmitRes: results,
+    onSubmitLoad: loading,
+    onSubmitHist: history,
+  });
   return (
     <>
       <Header />
@@ -34,13 +50,23 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col gap-10">
-              <form className="relative group">
+              <form
+                className="relative group"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  // Implement search functionality here
+                  setResults([...results]); // Placeholder to avoid unused variable warning
+                  setLoading(true);
+                  setHistory([...history, searchQuery]);
+                }}
+              >
                 <input
                   type="text"
-                  className="w-full text-[#ffffff] backdrop-blur-md border border-[#1A1E23] rounded-xl py-4 px-6 pr-12  focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-transparent transition-all duration-300"
+                  className="w-full text-black backdrop-blur-md border border-[#1A1E23] rounded-xl py-4 px-6 pr-12  focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-transparent transition-all duration-300"
                   placeholder="Search for movies, TV shows..."
                   defaultValue=""
                   aria-label="Search"
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <button
                   type="submit"
