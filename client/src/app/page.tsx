@@ -7,7 +7,7 @@ import SectionHeader from "./components/clientSide/SectionHeader";
 import DisplayCard from "./components/serverSide/DisplayCard";
 import ActionButton from "./components/clientSide/ActionButton";
 import Footer from "./components/clientSide/Footer";
-import { useSearch } from "./contexts/SearchContext";
+import { useSearch } from "../contexts/SearchContext";
 import {
   featuresCards,
   exploreOurContentCards,
@@ -34,7 +34,6 @@ export default function Home() {
   });
   return (
     <>
-      <Header />
       <main className="bg-[#121317] ">
         <BackgroundContainer backgroundImage="https://image.tmdb.org/t/p/original/wJ20rOZ1VgkCqv1jeOQB2Brny9k.jpg?w=1920&h=1080">
           <section
@@ -226,7 +225,6 @@ export default function Home() {
           />
         </section>
       </main>
-      <Footer />
     </>
   );
 }

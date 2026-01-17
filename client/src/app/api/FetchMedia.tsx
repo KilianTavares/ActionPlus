@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { filters } from "../lib/interfaces";
 
-export async function fetchMedia(
+export async function FetchMedia(
   media: string,
   filters: filters,
   currentPage: number,
@@ -23,32 +23,30 @@ export async function fetchMedia(
     return url;
   };
 
-  useEffect(() => {
-    const fetchMedia = async () => {
-      setLoading(true);
-      try {
-        const url = buildFilteredURL();
-        const options = {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-          },
-        };
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setMovies(data.results);
-        setTotalPages(data.total_pages);
-        setTotalResults(data.total_results);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
+  const fetchMedia = async () => {
+    setLoading(true);
+    try {
+      const url = buildFilteredURL();
+      const options = {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+        },
+      };
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    };
-    fetchMedia();
-  }, [currentPage, filters]);
+      const data = await response.json();
+      setMedia(data.results);
+      setTotalPages(data.total_pages);
+      setTotalResults(data.total_results);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchMedia();
 }

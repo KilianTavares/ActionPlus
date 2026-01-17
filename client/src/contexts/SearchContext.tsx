@@ -4,7 +4,7 @@ import { useState, createContext, useContext, ReactNode } from "react";
 interface SearchResult {
   id: string;
   title: string;
-  type: 'movie' | 'tv';
+  type: "movie" | "tv";
   poster?: string;
   year?: string;
 }
@@ -20,7 +20,9 @@ interface SearchContextType {
   setHistory: (history: string[]) => void;
 }
 
-export const SearchContext = createContext<SearchContextType | undefined>(undefined);
+export const SearchContext = createContext<SearchContextType | undefined>(
+  undefined
+);
 
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,7 +51,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
 export function useSearch() {
   const context = useContext(SearchContext);
   if (!context) {
-    throw new Error('useSearch must be used within a SearchProvider');
+    throw new Error("useSearch must be used within a SearchProvider");
   }
   return context;
 }

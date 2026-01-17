@@ -6,7 +6,7 @@ import MovieListing from "../components/clientSide/MovieListing";
 import { useState, useEffect } from "react";
 import PaginationControls from "../components/clientSide/PaginationControls";
 import FilterControls from "../components/clientSide/FilterControls";
-import { fetchMedia } from "../api/FetchMedia";
+import { FetchMedia } from "../api/FetchMedia";
 
 export default function Movies() {
   const [movies, setMovies] = useState<any[]>([]);
@@ -48,7 +48,7 @@ export default function Movies() {
   }, []);
 
   useEffect(() => {
-    fetchMedia(
+    FetchMedia(
       "movie",
       filters,
       currentPage,

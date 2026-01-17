@@ -6,7 +6,7 @@ import TvShowListing from "../components/clientSide/TvShowListing";
 import { useState, useEffect } from "react";
 import PaginationControls from "../components/clientSide/PaginationControls";
 import FilterControls from "../components/clientSide/FilterControls";
-import { fetchMedia } from "../api/FetchMedia";
+import { FetchMedia } from "../api/FetchMedia";
 
 export default function TvShows() {
   const [tvShows, setTvShows] = useState<any[]>([]);
@@ -23,7 +23,7 @@ export default function TvShows() {
     yearTo: undefined as number | undefined,
     rating: undefined as number | undefined,
   });
-  
+
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function TvShows() {
   }, []);
 
   useEffect(() => {
-    fetchMedia(
+    FetchMedia(
       "tv",
       filters,
       currentPage,
