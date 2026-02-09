@@ -24,11 +24,13 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           TableName: TABLE_NAME,
           KeyConditionExpression: "userID = :userID",
           ExpressionAttributeValues: { ":userID": req.user!.userID },
-        })
+        }),
       );
 
       if (!getUserResult.Items || getUserResult.Items.length === 0) {
-        return res.status(404).json({ success: false, message: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
 
       const userItem = getUserResult.Items[0];
@@ -46,8 +48,13 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         user: userData,
       });
     } catch (error) {
-      console.error(`❌ Profile fetch failed for user ${req.user!.userID}:`, error);
-      res.status(500).json({ success: false, message: "Failed to fetch profile" });
+      console.error(
+        `❌ Profile fetch failed for user ${req.user!.userID}:`,
+        error,
+      );
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to fetch profile" });
     }
   } else if (req.method === "PUT") {
     const { action, data, name, privacy, preferences, settings } = req.body;
@@ -59,7 +66,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           TableName: TABLE_NAME,
           KeyConditionExpression: "userID = :userID",
           ExpressionAttributeValues: { ":userID": req.user!.userID },
-        })
+        }),
       );
 
       if (!getUserResult.Items || getUserResult.Items.length === 0) {
@@ -160,7 +167,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     } catch (error) {
       console.error(
         `❌ Profile update failed for user ${req.user!.userID}:`,
-        error
+        error,
       );
       res
         .status(500)
