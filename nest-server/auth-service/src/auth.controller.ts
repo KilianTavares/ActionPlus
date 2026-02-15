@@ -1,15 +1,19 @@
 import { Controller, ParseUUIDPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { loginDTO, signUpDTO } from './dto/auth-dto';
+import { AuthService } from './auth.service';
 
 @Controller()
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
   @MessagePattern({ cmd: 'login' })
-  login(@Payload() loginDTO: loginDTO) {
-    return loginDTO;
+  async login(@Payload() loginDto: loginDTO) {
+    return this.authService.login(loginDto);
   }
+
   @MessagePattern({ cmd: 'signUp' })
-  signUp(@Payload() signupDTO: signUpDTO) {
-    return signupDTO;
+  async signUp(@Payload() signUpDto: signUpDTO) {
+    return this.authService.signUp(signUpDto);
   }
 }
