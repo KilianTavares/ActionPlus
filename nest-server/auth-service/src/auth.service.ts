@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { loginDTO, signUpDTO } from './dto/auth-dto';
+import { loginDTO, signUpDTO } from './auth-dto';
 
 @Injectable()
 export class AuthService {
@@ -16,14 +16,14 @@ export class AuthService {
     }
 
     if (user.password !== password) {
-      throw new UnauthorizedException('Invalid crednetials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const { password: _, ...result } = user;
     return result;
   }
 
-  async login(email: string, password: string): Promise<any> {
+  async login(loginDto: loginDTO): Promise<any> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
     // TODO Generate JWT

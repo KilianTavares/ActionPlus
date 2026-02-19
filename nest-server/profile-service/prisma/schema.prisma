@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User details model for basic profile information
+model UserDetails {
+  id          String   @id @default(cuid())
+  userId      String   @unique // Foreign key to auth-service User
+  email       String
+  name        String
+  createdAt   DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+
+  @@map("user_details")
+}
+
+// User preferences model for app-specific preferences
+model UserPreferences {
+  id             String  @id @default(cuid())
+  userId         String  @unique // Foreign key to auth-service User
+  favoriteGenre  String?
+  theme          String  @default("light")
+  language       String  @default("en")
+  notifications  Boolean @default(true)
+  autoplay       Boolean @default(false)
+  quality        String  @default("HD")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("user_preferences")
+}
+
+// User settings model for account settings
+model UserSettings {
+  id                   String  @id @default(cuid())
+  userId               String  @unique // Foreign key to auth-service User
+  profileVisibility    String  @default("public") // "public", "friends", "private"
+  emailNotifications   Boolean @default(true)
+  pushNotifications    Boolean @default(true)
+  dataSharing          Boolean @default(false)
+  twoFactorAuth        Boolean @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+// User privacy model for privacy-specific settings
+model UserPrivacy {
+  id                 String   @id @default(cuid())
+  userId             String   @unique // Foreign key to auth-service User
+  showEmail          Boolean  @default(false)
+  showActivity       Boolean  @default(true)
+  allowMessages      Boolean  @default(true)
+  searchable         Boolean  @default(true)
+  analyticsOptOut    Boolean  @default(false)
+  profileVisibility  String?  @default("public")
+  searchHistory      Boolean? @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("user_privacy")
+}
+
+// User activity model for tracking user actions and engagement
+model UserActivity {
+  id              String   @id @default(cuid())
+  userId          String   // Foreign key to auth-service User
+  activityType    String   // "view", "like", "comment", "share", "download"
+  resourceType    String   // "movie", "tv-show", "collection", "news"
+  resourceId      String   // ID of the resource being interacted with
+  metadata        Json?    // Additional data about the activity
+  timestamp       DateTime @default(now())
+  ipAddress       String?
+  userAgent       String?
+
+  @@map("user_activities")
+  @@index([userId, timestamp])
+  @@index([activityType])
+}
+
+// User watchlist model for saved content
+model UserWatchlist {
+  id           String   @id @default(cuid())
+  userId       String   // Foreign key to auth-service User
+  contentType  String   // "movie", "tv-show"
+  contentId    String   // External content ID
+  contentTitle String
+  contentPoster String?
+  addedAt      DateTime @default(now())
+  priority     Int?     @default(0) // User can set priority for their watchlist
+  notes        String?  // User notes about this item
+
+  @@map("user_watchlists")
+  @@unique([userId, contentId, contentType])
+  @@index([userId, addedAt])
+}
+
+// User ratings model for content ratings
+model UserRating {
+  id          String   @id @default(cuid())
+  userId      String   // Foreign key to auth-service User
+  contentType String   // "movie", "tv-show"
+  contentId   String   // External content ID
+  rating      Float    // 1.0 to 10.0
+  review      String?  // Optional text review
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("user_ratings")
+  @@unique([userId, contentId, contentType])
+  @@index([contentId, contentType])
+  @@index([rating])
+}
