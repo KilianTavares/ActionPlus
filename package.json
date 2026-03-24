@@ -2,7 +2,7 @@
   "name": "action-server",
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently \"cd client && npm run dev\" \"cd server && npm run dev\"",
+    "dev": "concurrently \"cd client && npm run dev\" \"cd dotnet-server && npm run dev\"",
     "build": "next build",
     "start": "next start -p 3001"
   },
