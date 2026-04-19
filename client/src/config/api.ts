@@ -1,5 +1,4 @@
-export const API_BASE_URL =
-  "https://iraiyyyp41.execute-api.ap-southeast-2.amazonaws.com/Prod";
+export const API_BASE_URL = "http://localhost:5288";
 
 export const API_ENDPOINTS = {
   signup: `${API_BASE_URL}/user/signup`,
