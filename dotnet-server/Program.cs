@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using dotnet_server.Models;
+using dotnet_server.Models.Users;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("UserList"));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Data Source=users.db";
+
+builder.Services.AddDbContext<UserContext>(opt => opt.UseSqlite(connectionString));
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<UserContext>();
+    dbContext.Database.EnsureCreated();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

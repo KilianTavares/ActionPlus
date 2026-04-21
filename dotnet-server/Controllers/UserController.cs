@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using dotnet_server.Models;
+using dotnet_server.Models.Users;
+
 
 namespace dotnet_server.Controllers
 {
