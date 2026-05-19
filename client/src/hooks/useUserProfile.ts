@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface UserProfile {
   userID: string;
@@ -19,14 +20,11 @@ export function useUserProfile() {
     if (!token) return;
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(API_ENDPOINTS.profile, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const result = await response.json();
       if (result.success) {

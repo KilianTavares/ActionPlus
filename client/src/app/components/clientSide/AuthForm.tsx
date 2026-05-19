@@ -86,7 +86,7 @@ export default function AuthForm() {
       setFormData({});
     } catch (error) {
       alert(
-        `Error: ${error instanceof Error ? error.message : "An error occurred"}`
+        `Error: ${error instanceof Error ? error.message : "An error occurred"}`,
       );
     } finally {
       setIsSubmitting(false);

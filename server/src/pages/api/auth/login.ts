@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import bcrypt from "bcrypt";
 import { generateToken } from "../../../lib/jwt";
-import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
+import { userQueries } from "../../../lib/sqlite";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -25,22 +24,13 @@ export default async function handler(
 
     try {
       // Query user by email
-      const result = await docClient.send(
-        new QueryCommand({
-          TableName: TABLE_NAME,
-          IndexName: "email-index", // You'll need to create this GSI
-          KeyConditionExpression: "email = :email",
-          ExpressionAttributeValues: { ":email": email },
-        })
-      );
+      const user = userQueries.findByEmail(email);
 
-      if (!result.Items || result.Items.length === 0) {
+      if (!user) {
         return res
           .status(401)
           .json({ success: false, message: "Invalid credentials" });
       }
-
-      const user = result.Items[0];
 
       // Verify password
       const isValidPassword = await bcrypt.compare(password, user.password);
@@ -50,17 +40,20 @@ export default async function handler(
           .json({ success: false, message: "Invalid credentials" });
       }
 
-      // Generate JWT tokens
-      const tokens = generateToken({
+      // Parse JSON fields
+      const userData = {
         userID: user.userID,
         email: user.email,
         name: user.name,
-      });
+      };
+
+      // Generate JWT tokens
+      const tokens = generateToken(userData);
 
       res.status(200).json({
         success: true,
         ...tokens,
-        user: { userID: user.userID, email: user.email, name: user.name },
+        user: userData,
       });
     } catch (error) {
       console.error("Login error:", error);

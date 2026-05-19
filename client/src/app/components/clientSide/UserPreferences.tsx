@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { API_ENDPOINTS } from "@/config/api";
 interface User {
   userID: string;
   email: string;
@@ -40,20 +41,17 @@ export default function UserPreferences({ user }: UserPreferencesProps) {
   const handleSave = async () => {
     console.log("🔑 Token being used:", token);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_AWS_APIGATEWAY_URL_dev}/profile`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            action: "preferences",
-            data: preferences,
-          }),
-        }
-      );
+      const response = await fetch(API_ENDPOINTS.profile, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: "preferences",
+          data: preferences,
+        }),
+      });
 
       const result = await response.json();
       console.log("📡 Response status:", response.status);

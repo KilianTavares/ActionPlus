@@ -1,11 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
 import { generateToken, verifyRefreshToken } from "../../../lib/jwt";
-import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
+import { userQueries } from "../../../lib/sqlite";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method === "POST") {
     const { refreshToken } = req.body;
@@ -26,14 +25,9 @@ export default async function handler(
     }
 
     try {
-      const getUserResult = await docClient.send(
-        new GetCommand({
-          TableName: TABLE_NAME,
-          Key: { userID: decoded.userID },
-        })
-      );
+      const user = userQueries.findByUserID(decoded.userID);
 
-      if (!getUserResult.Item) {
+      if (!user) {
         return res.status(404).json({
           success: false,
           message: "User not found",
@@ -41,9 +35,9 @@ export default async function handler(
       }
 
       const tokens = generateToken({
-        userID: getUserResult.Item.userID,
-        email: getUserResult.Item.email,
-        name: getUserResult.Item.name,
+        userID: user.userID,
+        email: user.email,
+        name: user.name,
       });
 
       res.status(200).json({

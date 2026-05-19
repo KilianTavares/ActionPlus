@@ -1,0 +1,8 @@
+# Ignore SQLite database files
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# But keep the directory structure
+!.gitignore

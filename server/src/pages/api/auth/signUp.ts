@@ -1,13 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import bcrypt from "bcrypt";
 import { generateToken } from "../../../lib/jwt";
-import { docClient, TABLE_NAME } from "../../../lib/dynamodb";
+import { userQueries } from "../../../lib/sqlite";
 import { DEFAULT_USER_DATA } from "../../../lib/defaults";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -26,51 +25,38 @@ export default async function handler(
       });
     }
 
-    // Generate keys
-    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const timestamp = new Date().toISOString();
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // DynamoDB item structure with defaults
-    const dynamoItem = {
-      userID: userId,
-      timestamp: timestamp,
-      email,
-      name,
-      password: hashedPassword,
-      preferences: { ...DEFAULT_USER_DATA.preferences, ...preferences },
-      settings: DEFAULT_USER_DATA.settings,
-      privacy: DEFAULT_USER_DATA.privacy,
-      createdAt: timestamp,
-    };
-
     try {
       // Check if user already exists
-      const existingUser = await docClient.send(
-        new QueryCommand({
-          TableName: TABLE_NAME,
-          IndexName: "email-index",
-          KeyConditionExpression: "email = :email",
-          ExpressionAttributeValues: { ":email": email },
-        })
-      );
+      const existingUser = userQueries.findByEmail(email);
 
-      if (existingUser.Items && existingUser.Items.length > 0) {
+      if (existingUser) {
         return res.status(409).json({
           success: false,
           message: "User already exists",
         });
       }
 
-      // Insert to DynamoDB
-      await docClient.send(
-        new PutCommand({
-          TableName: TABLE_NAME,
-          Item: dynamoItem,
-        })
-      );
+      // Generate keys
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const timestamp = new Date().toISOString();
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      // Create user data
+      const userData = {
+        userID: userId,
+        email,
+        name,
+        password: hashedPassword,
+        preferences: { ...DEFAULT_USER_DATA.preferences, ...preferences },
+        settings: DEFAULT_USER_DATA.settings,
+        privacy: DEFAULT_USER_DATA.privacy,
+        createdAt: timestamp,
+      };
+
+      // Insert to SQLite
+      userQueries.create(userData);
 
       // Generate JWT tokens
       const tokens = generateToken({

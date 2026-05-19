@@ -1,20 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import authRoutes from './routes/auth';
-import userRoutes from './routes/users';
-import { errorHandler } from './middleware/errorHandler';
+import express from "express";
+import cors from "cors";
+import authRoutes from "./routes/auth";
+import userRoutes from "./routes/users";
+import { errorHandler } from "./middleware/errorHandler";
+import "./lib/sqlite"; // Initialize SQLite database on startup
 
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString(), service: 'Action+ API' });
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    service: "Action+ API",
+  });
 });
 
 // Error handling
