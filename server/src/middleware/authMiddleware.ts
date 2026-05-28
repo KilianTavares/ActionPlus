@@ -10,12 +10,16 @@ function authMiddleware(
   res: Response,
   next: NextFunction,
 ): void {
-  const token = req.headers["authorization"];
+  const authHeader = req.headers["authorization"];
 
-  if (!token) {
+  if (!authHeader) {
     res.status(401).json({ message: "No token provided" });
     return;
   }
+
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : authHeader;
 
   jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded: any) => {
     if (err) {

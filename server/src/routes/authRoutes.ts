@@ -1,89 +1,100 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { pool } from "../db.js";
-import { AuthInterface } from "../shared/interfaces.js";
+import db from "../db.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const router = express.Router();
 
+interface RegisterBody {
+  name: string;
+  email: string;
+  password: string;
+}
+interface LoginBody {
+  email: string;
+  password: string;
+}
+
 // POST /auth/register
 router.post(
   "/register",
-  async (req: Request<{}, {}, AuthInterface>, res: Response) => {
-    const { username, password } = req.body;
+  (req: Request<{}, {}, RegisterBody>, res: Response) => {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Name, email and password are required" });
+    }
 
     const hashedPassword = bcrypt.hashSync(password, 8);
 
     try {
-      const insertUserQuery = `
-      INSERT INTO users (username, password)
-      VALUES ($1, $2)
-      RETURNING id
-    `;
-      const userResult = await pool.query(insertUserQuery, [
-        username,
-        hashedPassword,
-      ]);
-      const userId = userResult.rows[0].id;
+      const result = db
+        .prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)")
+        .run(name, email, hashedPassword);
+
+      const userId = result.lastInsertRowid as number;
+
+      db.prepare("INSERT INTO user_profiles (user_id) VALUES (?)").run(userId);
 
       const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
         expiresIn: "24h",
       });
 
-      res.json({ token });
+      res.json({
+        success: true,
+        accessToken: token,
+        user: { userID: String(userId), name, email },
+      });
     } catch (err: any) {
       console.error("Registration error:", err.message);
-
-      // Conflict on email (already taken)
-      if (err.code === "23505") {
-        return res.status(409).json({ message: "Username already exists" });
+      if (err.code === "SQLITE_CONSTRAINT_UNIQUE") {
+        return res.status(409).json({ message: "Email already registered" });
       }
-
-      res.status(503).send("Something went wrong");
+      res.status(503).json({ message: "Something went wrong" });
     }
   },
 );
 
 // POST /auth/login
-router.post(
-  "/login",
-  async (req: Request<{}, {}, AuthInterface>, res: Response) => {
-    const { username, password } = req.body;
+router.post("/login", (req: Request<{}, {}, LoginBody>, res: Response) => {
+  const { email, password } = req.body;
 
-    try {
-      const findUserQuery = `
-      SELECT * FROM users WHERE username = $1
-    `;
-      const userResult = await pool.query(findUserQuery, [username]);
-      const user = userResult.rows[0];
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+  try {
+    const user = db
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .get(email) as any;
 
-      const passwordIsValid = bcrypt.compareSync(password, user.password);
-
-      if (!passwordIsValid) {
-        return res.status(401).json({ message: "Invalid password" });
-      }
-
-      const token = jwt.sign(
-        { id: user.id },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: "24h",
-        },
-      );
-
-      res.json({ token });
-    } catch (err: any) {
-      console.error("Login error:", err.message);
-      res.status(503).send("Something went wrong");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-  },
-);
+
+    const passwordIsValid = bcrypt.compareSync(password, user.password);
+    if (!passwordIsValid) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
+      expiresIn: "24h",
+    });
+
+    res.json({
+      success: true,
+      accessToken: token,
+      user: { userID: String(user.id), name: user.name, email: user.email },
+    });
+  } catch (err: any) {
+    console.error("Login error:", err.message);
+    res.status(503).json({ message: "Something went wrong" });
+  }
+});
 
 export default router;

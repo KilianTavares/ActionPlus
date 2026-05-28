@@ -1,40 +1,58 @@
 import express, { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { pool } from "../db.js";
-import { AuthInterface } from "../shared/interfaces.js";
-import dotenv from "dotenv";
+import db from "../db.js";
 
-dotenv.config();
+interface ContactBody {
+  userID?: string;
+  queryType?: string;
+  name: string;
+  email: string;
+  phoneNumber?: string;
+  registeredUser?: boolean;
+  queryText: string;
+}
 
 const router = express.Router();
 
-// POST /auth/register
-router.post(
-  "/contact",
-  async (req: Request<{}, {}, AuthInterface>, res: Response) => {
-    const { userID, queryType, name, email, phoneNumber registeredUser, queryText } = req.body;
+// POST /contact
+router.post("/", (req: Request<{}, {}, ContactBody>, res: Response) => {
+  const {
+    userID,
+    queryType,
+    name,
+    email,
+    phoneNumber,
+    registeredUser,
+    queryText,
+  } = req.body;
 
-    const hashedPassword = bcrypt.hashSync(password, 8);
+  if (!name || !email || !queryText) {
+    return res
+      .status(400)
+      .json({ message: "Name, email and query text are required" });
+  }
 
-    try {
-      const insertUserQuery = `
-      INSERT INTO users (userID, queryType, name, email, phoneNumber registeredUser, queryText )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `;
-      const userResult = await pool.query(insertUserQuery, [
-       userID, queryType, name, email, phoneNumber registeredUser, queryText
-      ]);
-      const userId = userResult.rows[0].id;
+  try {
+    db.prepare(
+      `INSERT INTO contacts (user_id, query_type, name, email, phone_number, registered_user, query_text)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    ).run(
+      userID ?? null,
+      queryType ?? null,
+      name,
+      email,
+      phoneNumber ?? null,
+      registeredUser ? 1 : 0,
+      queryText,
+    );
 
-      res.send(
-        'Your query was sent successfully, We will be in touch')
-    } catch (err: any) {
-      console.error("Registration error:", err.message);
-
-      res.status(503).send("Something went wrong");
-    }
-  },
-);
+    res.json({
+      success: true,
+      message: "Your query was sent successfully. We will be in touch.",
+    });
+  } catch (err: any) {
+    console.error("Contact error:", err.message);
+    res.status(503).json({ message: "Something went wrong" });
+  }
+});
 
 export default router;

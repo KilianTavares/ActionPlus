@@ -1,9 +1,9 @@
 export const API_BASE_URL =
-  "https://iraiyyyp41.execute-api.ap-southeast-2.amazonaws.com/Prod";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5003";
 
 export const API_ENDPOINTS = {
-  signup: `${API_BASE_URL}/user/signup`,
-  login: `${API_BASE_URL}/user/login`,
+  signup: `${API_BASE_URL}/auth/register`,
+  login: `${API_BASE_URL}/auth/login`,
   contact: `${API_BASE_URL}/contact`,
   profile: `${API_BASE_URL}/profile`,
   upload: `${API_BASE_URL}/upload`,

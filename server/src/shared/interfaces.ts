@@ -1,12 +1,13 @@
 export interface AuthInterface {
-    username: string;
-    password: string;
-    email?: string;
-    age?: number;
+  name: string;
+  email: string;
+  password: string;
 }
 
 export interface User {
-    id: number;
-    username: string;
-    password: string;
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  created_at: string;
 }

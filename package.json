@@ -7,17 +7,10 @@
     "start": "next start -p 3001"
   },
   "dependencies": {
-    "@types/aws-lambda": "^8.10.155",
-    "next": "^15.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "serverless": "^3.40.0",
-    "serverless-plugin-typescript": "^2.1.5"
+    "concurrently": "^8.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@types/react": "^18.0.0",
-    "concurrently": "^8.2.0",
     "typescript": "^5.0.0"
   }
 }
